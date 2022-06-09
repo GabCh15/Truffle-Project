@@ -18,17 +18,30 @@ contract Windows is ERC721Enumerable, Ownable {
         tokenPrice = newTokenPrice;
     }
 
+    function mintMultipleTokens(uint256 amount) public {
+        require(IERC20(paymentToken).approve(
+                msg.sender,
+                tokenPrice * amount
+            ),
+            'Approval failed'
+        ) ;
+        
+        require(
+             IERC20(paymentToken).transferFrom(
+                msg.sender,
+                owner(),
+                tokenPrice * amount
+            ),
+            'Transfer failed'
+        );
+        for(uint i = 0; i < amount; i++) _mint(msg.sender, uniqueIdCounter);
+    }
+
     function mintToken() public {
         require(
             IERC20(paymentToken).transferFrom(msg.sender, owner(), tokenPrice),
             'Transfer failed'
         );
-        _mint(msg.sender, uniqueIdCounter);
-        uniqueIdCounter++;
-    }
-
-    receive() external payable {
-        require(msg.value > tokenPrice, 'Eth is not enough');
         _mint(msg.sender, uniqueIdCounter);
         uniqueIdCounter++;
     }

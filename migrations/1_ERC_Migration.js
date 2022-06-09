@@ -1,7 +1,9 @@
-const Linux = artifacts.require("Linux");
-const Staking = artifacts.require("Staking");
+const Linux = artifacts.require('Linux')
+const Windows = artifacts.require('Windows')
+const Staking = artifacts.require('Staking')
 
 module.exports = async function (deployer) {
-  await deployer.deploy(Linux);
-  await deployer.deploy(Staking,Linux.address);
-};
+    await deployer.deploy(Linux)
+    await deployer.deploy(Windows, Linux.address)
+    await deployer.deploy(Staking, Linux.address)
+}

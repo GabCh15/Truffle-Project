@@ -25,7 +25,5 @@ contract Linux is ERC20{
 
     receive() external payable{
      _mint(msg.sender,msg.value);
-     getRewards();
-     lockedDate[msg.sender]=block.timestamp;
     }
 }
