@@ -8,6 +8,8 @@ contract Windows is ERC721Enumerable, Ownable {
 
     uint256 tokenPrice = 10;
 
+    uint256 tokenPriceRebate = 1;
+
     address public immutable paymentToken;
 
     constructor(address tokenAddress) public ERC721('Windows', 'WND') {
@@ -18,23 +20,20 @@ contract Windows is ERC721Enumerable, Ownable {
         tokenPrice = newTokenPrice;
     }
 
+    function setTokenPriceRebate(uint256 newTokenPriceRebate) public onlyOwner {
+        tokenPriceRebate = tokenPriceRebate;
+    }
+
     function mintMultipleTokens(uint256 amount) public {
-        require(IERC20(paymentToken).approve(
-                msg.sender,
-                tokenPrice * amount
-            ),
-            'Approval failed'
-        ) ;
-        
         require(
-             IERC20(paymentToken).transferFrom(
+            IERC20(paymentToken).transferFrom(
                 msg.sender,
                 owner(),
                 tokenPrice * amount
             ),
             'Transfer failed'
         );
-        for(uint i = 0; i < amount; i++) _mint(msg.sender, uniqueIdCounter);
+        for (uint256 i = 0; i < amount; i++) mintToken();
     }
 
     function mintToken() public {
