@@ -1,0 +1,77 @@
+{
+  "contractName": "LinuxStaking",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/LinuxStaking.sol\":\"LinuxStaking\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/LinuxStaking.sol\":{\"keccak256\":\"0x9ca487a0248bde8b6bba95450f5a9a7f5aad9bd18e0081c3751a4b3445473ab2\",\"urls\":[\"bzz-raw://a1ff5eeb1ad856168066efcc3b414dc3af4028e5d7a6af1b261508718d145ae6\",\"dweb:/ipfs/QmbjzBBcFp6VMj9M6h3dHkk2fuW9T2tdxT2eubVuPc2LAH\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220a7f56e0bc027cec6765bed770c4008ef0fdb2fcf1255a794fc40438fd44d97b964736f6c634300080a0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220a7f56e0bc027cec6765bed770c4008ef0fdb2fcf1255a794fc40438fd44d97b964736f6c634300080a0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "36:34:16:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "36:34:16:-:0;;;;;",
+  "source": "pragma solidity >=0.4.22 <0.9.0;\r\n\r\ncontract LinuxStaking {\r\n\r\n    \r\n}",
+  "sourcePath": "C:\\Users\\PC\\Documents\\VSCode\\Solidity\\contracts\\LinuxStaking.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/LinuxStaking.sol",
+    "exportedSymbols": {
+      "LinuxStaking": [
+        2809
+      ]
+    },
+    "id": 2810,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2808,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:32:16"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "LinuxStaking",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 2809,
+        "linearizedBaseContracts": [
+          2809
+        ],
+        "name": "LinuxStaking",
+        "nameLocation": "45:12:16",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 2810,
+        "src": "36:34:16",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:70:16"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.10+commit.fc410830.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.7",
+  "updatedAt": "2022-06-09T14:40:07.236Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

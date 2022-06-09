@@ -10,7 +10,11 @@ contract Windows is ERC721Enumerable, Ownable {
 
     uint256 tokenPriceRebate = 1;
 
+    bool isMintEnabled = true;
+
     address public immutable paymentToken;
+
+    event WindowsTransfer(address from, uint256 tokensPaid, uint256 tokenAmout);
 
     constructor(address tokenAddress) public ERC721('Windows', 'WND') {
         paymentToken = tokenAddress;
@@ -21,19 +25,33 @@ contract Windows is ERC721Enumerable, Ownable {
     }
 
     function setTokenPriceRebate(uint256 newTokenPriceRebate) public onlyOwner {
-        tokenPriceRebate = tokenPriceRebate;
+        tokenPriceRebate = newTokenPriceRebate;
+    }
+
+    function setIsMintEnabled(bool newMintLocked) public onlyOwner {
+        isMintEnabled = newMintLocked;
+    }
+
+    function _windowsMint(address addresToMint) internal {
+        require(isMintEnabled, 'Mint is no enable at this moment!');
+        _mint(addresToMint, uniqueIdCounter);
+        uniqueIdCounter++;
     }
 
     function mintMultipleTokens(uint256 amount) public {
+        uint256 price = tokenPrice * amount;
+        if (amount > 1) {
+            price -= tokenPriceRebate * amount;
+            emit WindowsTransfer(msg.sender, price, amount);
+        }
+
         require(
-            IERC20(paymentToken).transferFrom(
-                msg.sender,
-                owner(),
-                tokenPrice * amount
-            ),
+            IERC20(paymentToken).transferFrom(msg.sender, owner(), price),
             'Transfer failed'
         );
-        for (uint256 i = 0; i < amount; i++) mintToken();
+        for (uint256 i = 0; i < amount; i++) {
+            _windowsMint(msg.sender);
+        }
     }
 
     function mintToken() public {
@@ -41,7 +59,6 @@ contract Windows is ERC721Enumerable, Ownable {
             IERC20(paymentToken).transferFrom(msg.sender, owner(), tokenPrice),
             'Transfer failed'
         );
-        _mint(msg.sender, uniqueIdCounter);
-        uniqueIdCounter++;
+        _windowsMint(msg.sender);
     }
 }

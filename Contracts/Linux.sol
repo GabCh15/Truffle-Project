@@ -15,14 +15,6 @@ contract Linux is ERC20{
          msg.sender.call{value:amount}("");
     }
 
-       function getRewards() public payable {
-           require(
-                balanceOf(msg.sender) != 0, "User balance is 0"
-            );
-           uint reward = balanceOf(msg.sender) * 1/8 * (block.timestamp-lockedDate[msg.sender])/60;
-         msg.sender.call{value:reward}("");
-    }
-
     receive() external payable{
      _mint(msg.sender,msg.value);
     }
