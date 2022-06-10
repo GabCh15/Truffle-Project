@@ -16,6 +16,11 @@ contract Windows is ERC721Enumerable, Ownable {
 
     event WindowsTransfer(address from, uint256 tokensPaid, uint256 tokenAmout);
 
+    modifier mintEnabled(){
+        require(isMintEnabled, 'Mint is no enabled at this moment!');
+        _;
+    }
+
     constructor(address tokenAddress) public ERC721('Windows', 'WND') {
         paymentToken = tokenAddress;
     }
@@ -33,12 +38,11 @@ contract Windows is ERC721Enumerable, Ownable {
     }
 
     function _windowsMint(address addresToMint) internal {
-        require(isMintEnabled, 'Mint is no enable at this moment!');
         _mint(addresToMint, uniqueIdCounter);
         uniqueIdCounter++;
     }
 
-    function mintMultipleTokens(uint256 amount) public {
+    function mintMultipleTokens(uint256 amount) public mintEnabled{
         uint256 price = tokenPrice * amount;
         if (amount > 1) {
             price -= tokenPriceRebate * amount;
@@ -54,7 +58,7 @@ contract Windows is ERC721Enumerable, Ownable {
         }
     }
 
-    function mintToken() public {
+    function mintToken() public  mintEnabled{
         require(
             IERC20(paymentToken).transferFrom(msg.sender, owner(), tokenPrice),
             'Transfer failed'

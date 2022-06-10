@@ -48,7 +48,7 @@ contract('Linux', (accounts) => {
             await linux.firstMint({ value: 1000 })
             await linux.firstMint({ value: 1000 })
         } catch (e) {
-            console.log(await linux.balanceOf(currentAddress),"Balance")
+            console.log(await linux.balanceOf(currentAddress), 'Balance')
         }
         assert.equal(
             await linux.balanceOf(currentAddress),
@@ -61,6 +61,25 @@ contract('Linux', (accounts) => {
 contract('LinuxStaking', (accounts) => {
     let currentAddres = accounts[0]
     it('Linux staking should stake some tokens', async () => {
-        linux.setStakingAddress(linuxStaking.address)
+        await linux.setStakingAddress(linuxStaking.address)
+        await linux.firstMint({ value: 1000 })
+        await linux.approve(linuxStaking.address, 1000)
+        await linuxStaking.deposit(100)
+        assert.equal(
+            await linux.balanceOf(linuxStaking.address),
+            100,
+            "Tokens weren't staked"
+        )
     })
+    it('Linux staking should retrieve the tokens', async () => {
+        await linux.setStakingAddress(linuxStaking.address)
+        await linux.firstMint({ value: 1000 })
+        await linux.approve(linuxStaking.address, 10000)
+        await linuxStaking.deposit(100)
+        await linuxStaking.retrieve()
+        await linuxStaking.deposit(200)
+        await linuxStaking.retrieve()
+        assert.equal(await linux.balanceOf(linuxStaking.address), 0)
+    })
+    it('Linux staking should mint the rewards', async () => {})
 })

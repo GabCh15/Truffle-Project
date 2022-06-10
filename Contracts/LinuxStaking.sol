@@ -41,11 +41,12 @@ contract LinuxStaking is Ownable {
 
     function retrieve() public {
         address sender = msg.sender;
+        IERC20 tokenContract = IERC20(tokenAddress);
+        uint senderStakedTokens = lockedTokens[sender].amount;
         require(
-            IERC20(tokenAddress).transferFrom(
-                address(this),
+            tokenContract.transfer(
                 sender,
-                lockedTokens[sender].amount
+                senderStakedTokens
             )
         );
         lockedTokens[sender] = StakeData(0, 0);
