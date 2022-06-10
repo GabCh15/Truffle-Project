@@ -25,10 +25,12 @@ contract LinuxStaking is Ownable {
     }
 
     function deposit(uint256 amount) public {
+        StakeData memory senderLockedTokens = lockedTokens[msg.sender];
         require(
             IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount)
         );
-        lockedTokens[msg.sender] = StakeData(amount, block.timestamp);
+        if(senderLockedTokens.amount > 0){getReward();}
+        senderLockedTokens = StakeData(senderLockedTokens.amount + amount, block.timestamp);
     }
 
     function getReward() public {
@@ -50,5 +52,10 @@ contract LinuxStaking is Ownable {
             )
         );
         lockedTokens[sender] = StakeData(0, 0);
+    }
+
+    function exit() public {
+        getReward();
+        retrieve();
     }
 }
