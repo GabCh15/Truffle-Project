@@ -35,9 +35,9 @@ contract LinuxStaking is Ownable {
 
     function getReward() public {
         StakeData memory senderStake = lockedTokens[msg.sender];
+        require(senderStake.amount !=0,"Sender has not locked tokens");
         uint256 reward = (senderStake.amount *
             (block.timestamp - senderStake.date)) / stakingSecAmount;
-
         Linux(tokenAddress).allowedMint(msg.sender, reward);
     }
 
