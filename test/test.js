@@ -14,7 +14,7 @@ beforeEach(async () => {
 contract('Windows', (accounts) => {
     let currentAddress = accounts[0]
     it('Windows should mint multiple tokens', async () => {
-        await linux.sendTransaction({ value: 1000 })
+        await linux.firstMint({ value: 1000 })
         await linux.approve(windows.address, 1000)
         console.log((await windows.mintMultipleTokens(2)).logs[0].args)
         assert.equal(
@@ -24,7 +24,7 @@ contract('Windows', (accounts) => {
         )
     })
     it('Windows should not mint any token', async () => {
-        await linux.sendTransaction({ value: 1000 })
+        await linux.firstMint({ value: 1000 })
         await linux.approve(windows.address, 1000)
         await windows.setIsMintEnabled(false)
         try {
@@ -41,7 +41,26 @@ contract('Windows', (accounts) => {
     })
 })
 
+contract('Linux', (accounts) => {
+    let currentAddress = accounts[0]
+    it('Should not mint tokens twice', async () => {
+        try {
+            await linux.firstMint({ value: 1000 })
+            await linux.firstMint({ value: 1000 })
+        } catch (e) {
+            console.log(await linux.balanceOf(currentAddress),"Balance")
+        }
+        assert.equal(
+            await linux.balanceOf(currentAddress),
+            1000,
+            'User minted twice'
+        )
+    })
+})
+
 contract('LinuxStaking', (accounts) => {
     let currentAddres = accounts[0]
-    it('Linux staking should stake some tokens', async () => {})
+    it('Linux staking should stake some tokens', async () => {
+        linux.setStakingAddress(linuxStaking.address)
+    })
 })
