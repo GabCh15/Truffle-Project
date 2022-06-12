@@ -82,15 +82,10 @@ contract KaliLinux is ERC20, Ownable {
 
     function approveAndCall(
         address contractAddress,
-        uint256 amount,
-        uint256 tokenAmount
+        uint allowanceAmount,
+        bytes memory data
     ) external {
-        approve(contractAddress, amount);
-        if (tokenAmount == 1) WindowsXP(contractAddress).mintToken(msg.sender);
-        else
-            WindowsXP(contractAddress).mintMultipleTokens(
-                msg.sender,
-                tokenAmount
-            );
+        approve(contractAddress, allowanceAmount);
+        contractAddress.call(data);
     }
 }

@@ -123,7 +123,17 @@ contract('Kali Linux', (accounts) => {
     let currentAddress = accounts[0]
     it('Approve and call should work for Kali and WindowsXP', async () => {
         await kaliLinux.firstMint({ value: 1000 })
-        console.log(await kaliLinux.approveAndCall(windowsXP.address, 20, 2)) //137567 gas
-        assert.equal(await windowsXP.balanceOf(currentAddress), 2)
+        let dataTocall = web3.eth.abi.encodeFunctionCall(
+            {
+                inputs: [
+                    { internalType: 'address', name: 'buyer', type: 'address' },
+                ],
+                name: 'mintToken',
+                type: 'function',
+            },
+            [currentAddress]
+        )
+        await kaliLinux.approveAndCall(windowsXP.address, 10, dataTocall)
+        assert.equal(await windowsXP.balanceOf(currentAddress), 1)
     })
 })
