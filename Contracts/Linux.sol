@@ -78,4 +78,6 @@ contract Linux is ERC20, Ownable {
         allowedMint(sender, msg.value);
         alreadyMinted[sender] = true;
     }
+
+    
 }

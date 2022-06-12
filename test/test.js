@@ -13,25 +13,22 @@ beforeEach(async () => {
 
 contract('Windows', (accounts) => {
     let currentAddress = accounts[0]
-    it('Windows should mint multiple tokens', async () => {
+    /*it('Windows should mint multiple tokens', async () => {
         await linux.firstMint({ value: 1000 })
         await linux.approve(windows.address, 1000)
-        console.log((await windows.mintMultipleTokens(2)).logs[0].args)
         assert.equal(
             await windows.balanceOf(currentAddress),
             2,
             'User has not 2 NFTs'
         )
-    })
+    })*/
     it('Windows should not mint any token', async () => {
         await linux.firstMint({ value: 1000 })
         await linux.approve(windows.address, 1000)
         await windows.setIsMintEnabled(false)
         try {
             console.log(await windows.mintToken())
-        } catch (e) {
-            console.log(e)
-        }
+        } catch (e) {}
 
         assert.equal(
             await windows.balanceOf(currentAddress),
@@ -59,18 +56,19 @@ contract('Linux', (accounts) => {
 })
 
 contract('LinuxStaking', (accounts) => {
-    let currentAddres = accounts[0]
-    it('Linux staking should stake some tokens', async () => {
+    let currentAddress = accounts[0]
+    /*it('Linux staking should stake some tokens', async () => {
         await linux.setStakingAddress(linuxStaking.address)
         await linux.firstMint({ value: 1000 })
         await linux.approve(linuxStaking.address, 1000)
         await linuxStaking.deposit(100)
+        await linuxStaking.deposit(100)
         assert.equal(
             await linux.balanceOf(linuxStaking.address),
-            100,
+            200,
             "Tokens weren't staked"
         )
-    })
+    })*/
     it('Linux staking should retrieve the tokens', async () => {
         await linux.setStakingAddress(linuxStaking.address)
         await linux.firstMint({ value: 1000 })
@@ -82,12 +80,27 @@ contract('LinuxStaking', (accounts) => {
         assert.equal(await linux.balanceOf(linuxStaking.address), 0)
     })
     it('Linux staking should mint the rewards', async () => {
-        await linux.setStakingAddress(linuxStaking.address)
         await linux.firstMint({ value: 100 })
         await linux.approve(linuxStaking.address, 10000)
         await linuxStaking.deposit(100)
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         await linuxStaking.getReward()
-        console.log(await linux.balanceOf(currentAddres))
-
+        assert.equal(
+            await linux.balanceOf(currentAddress),
+            100,
+            "Address didn't get the reward"
+        )
+    })
+    it('Linux staking should mint the rewards and retrieve staked amount back', async () => {
+        await linux.firstMint({ value: 100 })
+        await linux.approve(linuxStaking.address, 10000)
+        await linuxStaking.deposit(100)
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await linuxStaking.getReward()
+        assert.equal(
+            await linux.balanceOf(currentAddress),
+            200,
+            "Address didn't get the reward and retrieve"
+        )
     })
 })

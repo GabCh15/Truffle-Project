@@ -19,6 +19,8 @@ contract LinuxStaking is Ownable {
     //Stores the stake data for address
     mapping(address => StakeData) lockedTokens;
 
+    event AddressLockedTokens(uint256 lockedTokens);
+
     modifier hasLockedTokens() {
         require(
             lockedTokens[msg.sender].amount != 0,
@@ -54,17 +56,21 @@ contract LinuxStaking is Ownable {
      *   of this contract
      */
     function deposit(uint256 amount) public {
-        StakeData memory senderLockedTokens = lockedTokens[msg.sender];
+        address sender = msg.sender;
+        StakeData memory senderStake = lockedTokens[sender];
+        uint reward = (senderStake.amount *
+            (block.timestamp - senderStake.date)) / stakingSecAmount;
         require(
-            IERC20(tokenAddress).transferFrom(msg.sender, address(this), amount)
+            IERC20(tokenAddress).transferFrom(sender, address(this), amount)
         );
-        if (senderLockedTokens.amount > 0) {
-            getReward();
-        }
-        senderLockedTokens = StakeData(
-            senderLockedTokens.amount + amount,
+
+        if (reward > 0) getReward();
+        
+        senderStake = StakeData(
+            senderStake.amount + amount,
             block.timestamp
         );
+        lockedTokens[sender] = senderStake;
     }
 
     /**@dev Mints the reward amount of tokens to the sender
@@ -78,7 +84,8 @@ contract LinuxStaking is Ownable {
         StakeData memory senderStake = lockedTokens[sender];
         uint256 reward = (senderStake.amount *
             (block.timestamp - senderStake.date)) / stakingSecAmount;
-        Linux(tokenAddress).allowedMint(msg.sender, reward);
+        require(reward > 0, 'There is no reward to mint');
+        Linux(tokenAddress).allowedMint(sender, reward);
         lockedTokens[sender] = StakeData(senderStake.amount, block.timestamp);
     }
 
@@ -90,9 +97,8 @@ contract LinuxStaking is Ownable {
      */
     function retrieve() public hasLockedTokens {
         address sender = msg.sender;
-        IERC20 tokenContract = IERC20(tokenAddress);
         uint256 senderStakedTokens = lockedTokens[sender].amount;
-        require(tokenContract.transfer(sender, senderStakedTokens));
+        require(IERC20(tokenAddress).transfer(sender, senderStakedTokens));
         lockedTokens[sender] = StakeData(0, 0);
     }
 
