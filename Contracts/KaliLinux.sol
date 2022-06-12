@@ -1,9 +1,9 @@
 pragma solidity 0.8.10;
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
-import './Windows.sol';
+import './WindowsXP.sol';
 
-contract Linux is ERC20, Ownable {
+contract KaliLinux is ERC20, Ownable {
     //Stores whether the address key has already minted or not
     mapping(address => bool) alreadyMinted;
 
@@ -23,7 +23,7 @@ contract Linux is ERC20, Ownable {
     /** @dev Constructs and define an ERC20 token, name and symbol
      *
      */
-    constructor() public ERC20('Linux', 'LNX') {}
+    constructor() public ERC20('KaliLinux', 'KLL') {}
 
     /** @dev Sets staking contract's address
      *
@@ -78,5 +78,19 @@ contract Linux is ERC20, Ownable {
         address sender = msg.sender;
         allowedMint(sender, msg.value);
         alreadyMinted[sender] = true;
+    }
+
+    function approveAndCall(
+        address contractAddress,
+        uint256 amount,
+        uint256 tokenAmount
+    ) external {
+        approve(contractAddress, amount);
+        if (tokenAmount == 1) WindowsXP(contractAddress).mintToken(msg.sender);
+        else
+            WindowsXP(contractAddress).mintMultipleTokens(
+                msg.sender,
+                tokenAmount
+            );
     }
 }

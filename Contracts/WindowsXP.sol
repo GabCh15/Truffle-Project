@@ -3,7 +3,7 @@ import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
 import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
-contract Windows is ERC721Enumerable, Ownable {
+contract WindowsXP is ERC721Enumerable, Ownable {
     //Stores the next available unique token Id
     uint256 uniqueIdCounter = 0;
 
@@ -29,7 +29,7 @@ contract Windows is ERC721Enumerable, Ownable {
      *      and defines the token contract's address
      *      used to pay
      */
-    constructor(address tokenAddress) public ERC721('Windows', 'WND') {
+    constructor(address tokenAddress) public ERC721('WindowsXP', 'WXP') {
         paymentToken = tokenAddress;
     }
 
@@ -80,19 +80,19 @@ contract Windows is ERC721Enumerable, Ownable {
      * - Tokens total price has to be transferred to the address
      *   of this contract
      */
-    function mintMultipleTokens(uint256 amount) public mintEnabled {
+    function mintMultipleTokens(address buyer,uint256 amount) public mintEnabled {
         uint256 price = tokenPrice * amount;
         if (amount > 1) {
             price -= tokenPriceRebate * amount;
         }
 
         require(
-            IERC20(paymentToken).transferFrom(msg.sender, owner(), price),
+            IERC20(paymentToken).transferFrom(buyer, owner(), price),
             'Transfer failed'
         );
 
         for (uint256 i = 0; i < amount; i++) {
-            _windowsMint(msg.sender);
+            _windowsMint(buyer);
         }
     }
 
@@ -106,12 +106,12 @@ contract Windows is ERC721Enumerable, Ownable {
      * - Tokens price has to be transferred to the address
      *   of this contract
      */
-    function mintToken() public mintEnabled {
+    function mintToken(address buyer) public mintEnabled {
         require(
-            IERC20(paymentToken).transferFrom(msg.sender, owner(), tokenPrice),
+            IERC20(paymentToken).transferFrom(buyer, owner(), tokenPrice),
             'Transfer failed'
         );
-        _windowsMint(msg.sender);
+        _windowsMint(buyer);
     }
     
 }
