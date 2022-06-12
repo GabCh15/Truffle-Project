@@ -46,7 +46,7 @@ contract LinuxStaking is Ownable {
         stakingSecAmount = secondsAmount;
     }
 
-    /**@dev Adds a given amount of tokens to the sender address
+    /**@notice Adds a given amount of tokens to the sender address
      *
      * Calling conditions:
      *
@@ -58,22 +58,19 @@ contract LinuxStaking is Ownable {
     function deposit(uint256 amount) public {
         address sender = msg.sender;
         StakeData memory senderStake = lockedTokens[sender];
-        uint reward = (senderStake.amount *
+        uint256 reward = (senderStake.amount *
             (block.timestamp - senderStake.date)) / stakingSecAmount;
         require(
             IERC20(tokenAddress).transferFrom(sender, address(this), amount)
         );
 
         if (reward > 0) getReward();
-        
-        senderStake = StakeData(
-            senderStake.amount + amount,
-            block.timestamp
-        );
+
+        senderStake = StakeData(senderStake.amount + amount, block.timestamp);
         lockedTokens[sender] = senderStake;
     }
 
-    /**@dev Mints the reward amount of tokens to the sender
+    /**@notice Mints the reward amount of tokens to the sender
      *
      * Calling conditions:
      *
@@ -89,7 +86,7 @@ contract LinuxStaking is Ownable {
         lockedTokens[sender] = StakeData(senderStake.amount, block.timestamp);
     }
 
-    /**@dev Retrieves back the locked tokens of sender
+    /**@notice Retrieves back the locked tokens of sender
      *
      * Calling conditions:
      *
@@ -102,7 +99,7 @@ contract LinuxStaking is Ownable {
         lockedTokens[sender] = StakeData(0, 0);
     }
 
-    /**@dev Retrieves back the locked tokens
+    /**@notice Retrieves back the locked tokens
      *      of sender and gets rewards
      *
      * Calling conditions:

@@ -38,7 +38,7 @@ contract Linux is ERC20, Ownable {
         stakingAddress = stakingContractAddress;
     }
 
-    /** @dev Mints a given amount of tokens to a given address
+    /** @notice Mints a given amount of tokens to a given address
      *
      * Calling conditions:
      *
@@ -52,7 +52,7 @@ contract Linux is ERC20, Ownable {
         _mint(addressToMint, amount);
     }
 
-    /** @dev Withdraws a given amount of tokens
+    /** @notice Withdraws a given amount of tokens
      *       to sender
      *
      * Calling conditions:
@@ -68,7 +68,7 @@ contract Linux is ERC20, Ownable {
         msg.sender.call{value: amount}('');
     }
 
-    /** @dev Mints the paid amount of ETH to sender
+    /** @notice Mints the paid amount of ETH to sender
      *
      * Calling conditions:
      *

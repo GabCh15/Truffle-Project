@@ -70,7 +70,7 @@ contract WindowsXP is ERC721Enumerable, Ownable {
         uniqueIdCounter++;
     }
 
-    /**@dev Mints given amount of tokens to sender address
+    /**@notice Mints given amount of tokens to sender address
      *
      * Calling conditions:
      *
@@ -80,7 +80,10 @@ contract WindowsXP is ERC721Enumerable, Ownable {
      * - Tokens total price has to be transferred to the address
      *   of this contract
      */
-    function mintMultipleTokens(address buyer,uint256 amount) public mintEnabled {
+    function mintMultipleTokens(address buyer, uint256 amount)
+        public
+        mintEnabled
+    {
         uint256 price = tokenPrice * amount;
         if (amount > 1) {
             price -= tokenPriceRebate * amount;
@@ -96,7 +99,7 @@ contract WindowsXP is ERC721Enumerable, Ownable {
         }
     }
 
-    /**@dev Mints given amount of tokens to sender address}
+    /**@notice Mints given amount of tokens to sender address}
      *
      * Calling conditions:
      *
@@ -113,5 +116,4 @@ contract WindowsXP is ERC721Enumerable, Ownable {
         );
         _windowsMint(buyer);
     }
-    
 }

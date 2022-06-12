@@ -52,7 +52,7 @@ contract KaliLinux is ERC20, Ownable {
         _mint(addressToMint, amount);
     }
 
-    /** @dev Withdraws a given amount of tokens
+    /** @notice Withdraws a given amount of tokens
      *       to sender
      *
      * Calling conditions:
@@ -68,7 +68,7 @@ contract KaliLinux is ERC20, Ownable {
         msg.sender.call{value: amount}('');
     }
 
-    /** @dev Mints the paid amount of ETH to sender
+    /** @notice Mints the paid amount of ETH to sender
      *
      * Calling conditions:
      *
@@ -80,9 +80,16 @@ contract KaliLinux is ERC20, Ownable {
         alreadyMinted[sender] = true;
     }
 
+    /** @notice Approves an amount of tokens and then call a given
+     *          contract address with the given data
+     *
+     * Calling conditions:
+     *
+     * - Data must be correctly encoded and structured
+     */
     function approveAndCall(
         address contractAddress,
-        uint allowanceAmount,
+        uint256 allowanceAmount,
         bytes memory data
     ) external {
         approve(contractAddress, allowanceAmount);

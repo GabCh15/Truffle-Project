@@ -70,7 +70,7 @@ contract Windows is ERC721Enumerable, Ownable {
         uniqueIdCounter++;
     }
 
-    /**@dev Mints given amount of tokens to sender address
+    /**@notice Mints given amount of tokens to sender address
      *
      * Calling conditions:
      *
@@ -96,7 +96,7 @@ contract Windows is ERC721Enumerable, Ownable {
         }
     }
 
-    /**@dev Mints given amount of tokens to sender address}
+    /**@notice Mints given amount of tokens to sender address}
      *
      * Calling conditions:
      *
@@ -113,5 +113,4 @@ contract Windows is ERC721Enumerable, Ownable {
         );
         _windowsMint(msg.sender);
     }
-    
 }
