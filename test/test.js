@@ -17,20 +17,15 @@ beforeEach(async () => {
     windowsXP = await WindowsXP.new(kaliLinux.address)
 })
 
-function asExecuteArg(functionName, argTypes, ...args) {
-    let signature = `function ${functionName}(${argTypes})`
-    let ABI = [signature]
-    let interface = new ethers.utils.Interface(ABI)
-    let output = interface.encodeFunctionData(functionName, args)
-    return output
-}
-
 contract('Windows', (accounts) => {
-    let currentAddress = accounts[0]
+    let ownerAddress = accounts[0]
+    let currentAddress = accounts[1]
+    let sender = { from: currentAddress }
     it('Windows should mint multiple tokens', async () => {
-        await linux.firstMint({ value: 1000 })
-        await linux.approve(windows.address, 1000)
-        await windows.mintMultipleTokens(2)
+        await linux.firstMint({ value: 1000, from:currentAddress })
+        await linux.approve(windows.address, 1000, sender)
+        await windows.mintMultipleTokens(2, sender)
+        assert.equal(await linux.balanceOf(ownerAddress), 18)
         assert.equal(
             await windows.balanceOf(currentAddress),
             2,

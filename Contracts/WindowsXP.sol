@@ -4,14 +4,11 @@ import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
 import '@openzeppelin/contracts/access/Ownable.sol';
 
 contract WindowsXP is ERC721Enumerable, Ownable {
-    //Stores the next available unique token Id
-    uint256 uniqueIdCounter = 0;
-
     //Stores the token price
     uint256 tokenPrice = 10;
 
     //Stores a rebate in token amount to discount on mint
-    uint256 tokenPriceRebate = 1;
+    uint256 tokenPriceRebate = 10;
 
     //Stores whether minting is enabled
     bool isMintEnabled = true;
@@ -66,8 +63,7 @@ contract WindowsXP is ERC721Enumerable, Ownable {
     /**@dev Mints a token to given address with unique token id
      */
     function _windowsMint(address addresToMint) internal {
-        _mint(addresToMint, uniqueIdCounter);
-        uniqueIdCounter++;
+        _mint(addresToMint, totalSupply());
     }
 
     /**@notice Mints given amount of tokens to sender address
@@ -86,7 +82,7 @@ contract WindowsXP is ERC721Enumerable, Ownable {
     {
         uint256 price = tokenPrice * amount;
         if (amount > 1) {
-            price -= tokenPriceRebate * amount;
+            price = price * (100-tokenPriceRebate)/100;
         }
 
         require(

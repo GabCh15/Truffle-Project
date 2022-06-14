@@ -58,13 +58,11 @@ contract LinuxStaking is Ownable {
     function deposit(uint256 amount) public {
         address sender = msg.sender;
         StakeData memory senderStake = lockedTokens[sender];
-        uint256 reward = (senderStake.amount *
-            (block.timestamp - senderStake.date)) / stakingSecAmount;
         require(
             IERC20(tokenAddress).transferFrom(sender, address(this), amount)
         );
 
-        if (reward > 0) getReward();
+        getReward();
 
         senderStake = StakeData(senderStake.amount + amount, block.timestamp);
         lockedTokens[sender] = senderStake;
@@ -76,12 +74,12 @@ contract LinuxStaking is Ownable {
      *
      * - Sender has to have locked tokens
      */
-    function getReward() public hasLockedTokens {
+    function getReward() public {
         address sender = msg.sender;
         StakeData memory senderStake = lockedTokens[sender];
         uint256 reward = (senderStake.amount *
             (block.timestamp - senderStake.date)) / stakingSecAmount;
-        require(reward > 0, 'There is no reward to mint');
+            if(reward > 0) return;
         Linux(tokenAddress).allowedMint(sender, reward);
         lockedTokens[sender] = StakeData(senderStake.amount, block.timestamp);
     }
