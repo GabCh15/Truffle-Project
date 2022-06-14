@@ -19,6 +19,9 @@ contract Windows is ERC721Enumerable, Ownable {
     //Stores the ERC20 contract's address used to pay
     address public immutable paymentToken;
 
+    //Percent const to make percentage operations
+    uint256 private constant PERCENT = 100;
+
     //Checks whether the mint is enabled
     modifier mintEnabled() {
         require(isMintEnabled, 'Mint is no enabled at this moment!');
@@ -70,6 +73,13 @@ contract Windows is ERC721Enumerable, Ownable {
         uniqueIdCounter++;
     }
 
+    /**@dev Calculates price to pay for given amount of tokens
+     */
+    function _calculatePrice(uint256 amount) internal view returns (uint256) {
+        if (amount == 1) return tokenPrice;
+        return (tokenPrice * amount * (PERCENT - tokenPriceRebate)) / PERCENT;
+    }
+
     /**@notice Mints given amount of tokens to sender address
      *
      * Calling conditions:
@@ -81,13 +91,12 @@ contract Windows is ERC721Enumerable, Ownable {
      *   of this contract
      */
     function mintMultipleTokens(uint256 amount) public mintEnabled {
-        uint256 price = tokenPrice * amount;
-        if (amount > 1) {
-            price -= tokenPriceRebate * amount;
-        }
-
         require(
-            IERC20(paymentToken).transferFrom(msg.sender, owner(), price),
+            IERC20(paymentToken).transferFrom(
+                msg.sender,
+                owner(),
+                _calculatePrice(amount)
+            ),
             'Transfer failed'
         );
 

@@ -1,5 +1,4 @@
 var assert = require('assert')
-const { ethers } = require('ethers')
 const Linux = artifacts.require('Linux')
 const LinuxStaking = artifacts.require('LinuxStaking')
 const Windows = artifacts.require('Windows')
@@ -25,7 +24,7 @@ contract('Windows', (accounts) => {
         await linux.firstMint({ value: 1000, from:currentAddress })
         await linux.approve(windows.address, 1000, sender)
         await windows.mintMultipleTokens(2, sender)
-        assert.equal(await linux.balanceOf(ownerAddress), 18)
+        assert.equal(await linux.balanceOf(ownerAddress), 19)
         assert.equal(
             await windows.balanceOf(currentAddress),
             2,

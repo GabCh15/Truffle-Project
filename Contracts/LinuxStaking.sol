@@ -61,11 +61,18 @@ contract LinuxStaking is Ownable {
         require(
             IERC20(tokenAddress).transferFrom(sender, address(this), amount)
         );
-
         getReward();
-
         senderStake = StakeData(senderStake.amount + amount, block.timestamp);
         lockedTokens[sender] = senderStake;
+    }
+
+    /**@dev Calculates the reward to mint to sender address
+     */
+    function _calculateReward(address sender) internal view returns (uint256) {
+        StakeData memory senderStake = lockedTokens[sender];
+        return
+            (senderStake.amount * (block.timestamp - senderStake.date)) /
+            stakingSecAmount;
     }
 
     /**@notice Mints the reward amount of tokens to the sender
@@ -76,12 +83,10 @@ contract LinuxStaking is Ownable {
      */
     function getReward() public {
         address sender = msg.sender;
-        StakeData memory senderStake = lockedTokens[sender];
-        uint256 reward = (senderStake.amount *
-            (block.timestamp - senderStake.date)) / stakingSecAmount;
-            if(reward > 0) return;
+        uint256 reward = _calculateReward(sender);
+        if (reward == 0) return;
         Linux(tokenAddress).allowedMint(sender, reward);
-        lockedTokens[sender] = StakeData(senderStake.amount, block.timestamp);
+        lockedTokens[sender].date = block.timestamp;
     }
 
     /**@notice Retrieves back the locked tokens of sender
