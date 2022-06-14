@@ -62,8 +62,7 @@ contract LinuxStaking is Ownable {
             IERC20(tokenAddress).transferFrom(sender, address(this), amount)
         );
         getReward();
-        senderStake = StakeData(senderStake.amount + amount, block.timestamp);
-        lockedTokens[sender] = senderStake;
+        lockedTokens[sender] = StakeData(senderStake.amount + amount, block.timestamp);
     }
 
     /**@dev Calculates the reward to mint to sender address

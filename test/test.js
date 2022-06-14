@@ -1,4 +1,10 @@
-var assert = require('assert')
+const { assert, expect } = require('chai')
+const {
+    time,
+    expectRevert,
+    expectEvent,
+    BN,
+} = require('@openzeppelin/test-helpers')
 const Linux = artifacts.require('Linux')
 const LinuxStaking = artifacts.require('LinuxStaking')
 const Windows = artifacts.require('Windows')
@@ -7,7 +13,7 @@ const WindowsXP = artifacts.require('WindowsXP')
 
 let linux, windows, linuxStaking, windowsXP, kaliLinux
 
-beforeEach(async () => {
+before(async () => {
     linux = await Linux.new()
     windows = await Windows.new(linux.address)
     linuxStaking = await LinuxStaking.new(linux.address)
@@ -16,101 +22,72 @@ beforeEach(async () => {
     windowsXP = await WindowsXP.new(kaliLinux.address)
 })
 
-contract('Windows', (accounts) => {
-    let ownerAddress = accounts[0]
-    let currentAddress = accounts[1]
-    let sender = { from: currentAddress }
-    it('Windows should mint multiple tokens', async () => {
-        await linux.firstMint({ value: 1000, from:currentAddress })
+contract('Windows', ([owner, user]) => {
+    let sender = { from: user }
+
+    before(async () => {
+        await linux.firstMint({ value: 1000, from: user })
         await linux.approve(windows.address, 1000, sender)
+    })
+
+    it('Windows should mint multiple tokens', async () => {
         await windows.mintMultipleTokens(2, sender)
-        assert.equal(await linux.balanceOf(ownerAddress), 19)
-        assert.equal(
-            await windows.balanceOf(currentAddress),
-            2,
-            'User has not 2 NFTs'
+        assert.equal(await linux.balanceOf(owner), 19)
+        assert.equal(await windows.balanceOf(user), 2, 'User has not 2 NFTs')
+    })
+
+    it('Windows should not mint any token', async () => {
+        await windows.setIsMintEnabled(false)
+        await expectRevert(
+            windows.mintToken(),
+            'Mint is no enabled at this moment!'
         )
     })
-    /*     it('Windows should not mint any token', async () => {
-        await linux.firstMint({ value: 1000 })
-        await linux.approve(windows.address, 1000)
-        await windows.setIsMintEnabled(false)
-        try {
-            console.log(await windows.mintToken())
-        } catch (e) {}
-
-        assert.equal(
-            await windows.balanceOf(currentAddress),
-            0,
-            'User minted succesfully'
-        )
-    }) */
 })
 
-contract('Linux', (accounts) => {
-    let currentAddress = accounts[0]
-    /*     it('Should not mint tokens twice', async () => {
-        try {
-            await linux.firstMint({ value: 1000 })
-            await linux.firstMint({ value: 1000 })
-        } catch (e) {
-        }
-        assert.equal(
-            await linux.balanceOf(currentAddress),
-            1000,
-            'User minted twice'
+contract('Linux', ([owner, user]) => {
+    before(async () => {
+        await linux.firstMint({ value: 1000, from: user })
+    })
+    it('Should not mint tokens twice', async () => {
+        await expectRevert(
+            linux.firstMint({ value: 1000, from: user }),
+            'Sender is not allowed to mint!'
         )
-    }) */
+    })
 })
 
-contract('LinuxStaking', (accounts) => {
-    let currentAddress = accounts[0]
-    /*it('Linux staking should stake some tokens', async () => {
+contract('LinuxStaking', ([owner, user]) => {
+    let sender = { from: user }
+    before(async () => {
         await linux.setStakingAddress(linuxStaking.address)
-        await linux.firstMint({ value: 1000 })
-        await linux.approve(linuxStaking.address, 1000)
-        await linuxStaking.deposit(100)
-        await linuxStaking.deposit(100)
+        await linux.firstMint({ value: 1000, from: user })
+        await linux.approve(linuxStaking.address, 1000, sender)
+    })
+
+    it('Linux staking should stake some tokens', async () => {
+        await linuxStaking.deposit(50, sender)
+        await linuxStaking.deposit(50, sender)
         assert.equal(
             await linux.balanceOf(linuxStaking.address),
-            200,
+            100,
             "Tokens weren't staked"
         )
-    })*/
-    /*     it('Linux staking should retrieve the tokens', async () => {
-        await linux.setStakingAddress(linuxStaking.address)
-        await linux.firstMint({ value: 1000 })
-        await linux.approve(linuxStaking.address, 10000)
-        await linuxStaking.deposit(100)
-        await linuxStaking.retrieve()
-        await linuxStaking.deposit(200)
-        await linuxStaking.retrieve()
+    })
+    it('Linux staking should retrieve the tokens', async () => {
+        await linuxStaking.deposit(50, sender)
+        await linuxStaking.retrieve(sender)
+        await linuxStaking.deposit(100, sender)
+        await linuxStaking.retrieve(sender)
         assert.equal(await linux.balanceOf(linuxStaking.address), 0)
     })
-    it('Linux staking should mint the rewards', async () => {
-        await linux.firstMint({ value: 100 })
-        await linux.approve(linuxStaking.address, 10000)
-        await linuxStaking.deposit(100)
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-        await linuxStaking.getReward()
-        assert.equal(
-            await linux.balanceOf(currentAddress),
-            100,
-            "Address didn't get the reward"
-        )
-    })
     it('Linux staking should mint the rewards and retrieve staked amount back', async () => {
-        await linux.firstMint({ value: 100 })
-        await linux.approve(linuxStaking.address, 10000)
-        await linuxStaking.deposit(100)
+        let currentBalance = await linux.balanceOf(user)
+        await linuxStaking.deposit(100, sender)
         await new Promise((resolve) => setTimeout(resolve, 1000))
-        await linuxStaking.getReward()
-        assert.equal(
-            await linux.balanceOf(currentAddress),
-            200,
-            "Address didn't get the reward and retrieve"
-        )
-    }) */
+        await linuxStaking.exit(sender)
+        expect(parseInt(await linux.balanceOf(user))).to.greaterThan(parseInt(currentBalance))
+    })
 })
 
 contract('Kali Linux', (accounts) => {
@@ -131,3 +108,4 @@ contract('Kali Linux', (accounts) => {
         assert.equal(await windowsXP.balanceOf(currentAddress), 1)
     })
 })
+

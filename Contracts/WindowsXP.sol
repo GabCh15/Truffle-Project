@@ -90,10 +90,13 @@ contract WindowsXP is ERC721Enumerable, Ownable {
      * - Tokens total price has to be transferred to the address
      *   of this contract
      */
-    function mintMultipleTokens(uint256 amount) public mintEnabled {
+    function mintMultipleTokens(address buyer, uint256 amount)
+        public
+        mintEnabled
+    {
         require(
             IERC20(paymentToken).transferFrom(
-                msg.sender,
+                buyer,
                 owner(),
                 _calculatePrice(amount)
             ),
@@ -101,7 +104,7 @@ contract WindowsXP is ERC721Enumerable, Ownable {
         );
 
         for (uint256 i = 0; i < amount; i++) {
-            _windowsMint(msg.sender);
+            _windowsMint(buyer);
         }
     }
 
@@ -115,11 +118,11 @@ contract WindowsXP is ERC721Enumerable, Ownable {
      * - Tokens price has to be transferred to the address
      *   of this contract
      */
-    function mintToken() public mintEnabled {
+    function mintToken(address buyer) public mintEnabled {
         require(
-            IERC20(paymentToken).transferFrom(msg.sender, owner(), tokenPrice),
+            IERC20(paymentToken).transferFrom(buyer, owner(), tokenPrice),
             'Transfer failed'
         );
-        _windowsMint(msg.sender);
+        _windowsMint(buyer);
     }
 }
